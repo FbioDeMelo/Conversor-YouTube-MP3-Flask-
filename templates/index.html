@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube → MP3</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🎧 Conversor YouTube → MP3</h1>
+        <form id="download-form">
+            <input type="text" id="url" name="url" placeholder="Cole o link do YouTube aqui" required>
+            <button type="submit">Baixar MP3</button>
+        </form>
+    </div>
+
+    <!-- Tela de loading -->
+    <div id="loading-screen" class="hidden">
+        <div class="loading-box">
+            <img src="{{ url_for('static', filename='loading.gif') }}" alt="Carregando..." width="80">
+            <p>Convertendo e baixando o áudio... 🎶</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('download-form');
+        const loading = document.getElementById('loading-screen');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loading.classList.remove('hidden');
+
+            const url = document.getElementById('url').value;
+            try {
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    body: new URLSearchParams({ url })
+                });
+
+                if (!response.ok) throw new Error('Erro no download');
+
+                // cria um link temporário pra baixar o arquivo
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+
+                // tenta extrair nome do arquivo do header
+                const cd = response.headers.get('Content-Disposition');
+                const match = cd && cd.match(/filename="(.+)"/);
+                a.download = match ? match[1] : 'audio.mp3';
+
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+
+            } catch (err) {
+                alert('Erro ao converter: ' + err.message);
+            } finally {
+                loading.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

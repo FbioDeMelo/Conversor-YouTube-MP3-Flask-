@@ -14,8 +14,6 @@
             <button type="submit">Baixar MP3</button>
         </form>
     </div>
-
-    <!-- Tela de loading -->
     <div id="loading-screen" class="hidden">
         <div class="loading-box">
             <img src="{{ url_for('static', filename='loading.gif') }}" alt="Carregando..." width="80">
@@ -39,14 +37,10 @@
                 });
 
                 if (!response.ok) throw new Error('Erro no download');
-
-                // cria um link temporário pra baixar o arquivo
                 const blob = await response.blob();
                 const downloadUrl = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = downloadUrl;
-
-                // tenta extrair nome do arquivo do header
                 const cd = response.headers.get('Content-Disposition');
                 const match = cd && cd.match(/filename="(.+)"/);
                 a.download = match ? match[1] : 'audio.mp3';
@@ -64,3 +58,4 @@
     </script>
 </body>
 </html>
+

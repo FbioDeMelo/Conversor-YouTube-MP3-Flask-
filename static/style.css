@@ -39,8 +39,6 @@ button {
 button:hover {
     background-color: #019875;
 }
-
-/* TELA DE LOADING */
 #loading-screen {
     position: fixed;
     top: 0;
@@ -68,3 +66,4 @@ button:hover {
     font-size: 18px;
     color: #00b894;
 }
+
